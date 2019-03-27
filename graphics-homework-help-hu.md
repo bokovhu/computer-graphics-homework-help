@@ -53,3 +53,82 @@ vertexek száma!
 2, vagy 3 elemszámú vektort, a negyedik eleme **mindenképp `1.0` legyen**! Azaz
 	* `vec2 vertex` esetén `vec4 (vertex.x, vertex.y, 0.0, 1.0)`
 	* `vec3 vertex` esetén `vec4 (vertex, 1.0)`
+
+## Kamera
+
+OpenGL-ben a "kamera", mint fogalom tökre másképp értelmezendő, mint egy boltban 
+kapható kamera. Ugyanis amikor a kamerát mozgatjuk, akkor igazából nem a kamera
+mozog, hanem az egész világot mozgatjuk ellenkező irányba. A kamerának pedig 
+az a szerepe, hogy egy "ablakot" adjon a virtuális világra. Két fontos mátrix-ot
+kell egy kamerában nyilvántartani:
+
+* Projekciós mátrix: Ez definiálja, hogy "mik történnek az egyenesekkel"
+	* Ortogonális vetítés esetén a merőleges egyenesek merőlegesek maradnak
+	* Perspektív vetítés esetén a merőleges egyenesek nem maradnak merőlegesek
+* View mátrix: Ez határozza meg a kamera transzformációját
+	* Hol van
+	* Merre néz
+	* Nagyítás
+
+Az ortogonális és perspektív kamerák közti különbség az alábbi képeken látható:
+
+![Perspektív projekció](perspective.png)
+
+![Ortogonális projekció](orthographic.png)
+
+A két kép **ugyanarról a jelenetről** készült, a különbség annyi, hogy az elsőben
+perspektív, a másodikban ortogonális vetítést használ a kamera.
+
+A kameráknál még van egy fogalom (aminek a magyar nevét nem tudom), a frustum.
+A frustum az a 3D test, amiben a benne lévő objektumokat látjuk, és a belőle kívül
+eső objektumokat nem. Szemléletesen a perspektív vetítés esetén ez a frustum egy
+csonka gúla, ortogonális esetben egy egyszerű téglatest.
+
+### Ortogonális vetítési mátrix
+
+```cpp
+/* Ez csinál egy egységmátrixot a referenciaként átvett mat4-ben */
+inline void IdentityMatrix (mat4 &matrix) {
+	
+	for (int i = 0; i < 4; i++) {
+		for (int j = 0; j < 4; j++) {
+			matrix.m [i][j] = 0.0f;
+		}
+		matrix.m [i][i] = 1.0f;
+	}
+	
+}
+
+/* Ez megcsinálja az ortogonális vetítési mátrixot a referenciaként átvett mat4-ben */
+inline void OrthographicProjection (
+	float left, 
+	float right, 
+	float top, 
+	float bottom,
+	float n,
+	float f,
+	mat4 &matrix
+) {
+	
+	IdentityMatrix (matrix);
+	
+	matrix.m [0][0] = 2.0f / (right - left);
+	matrix.m [1][1] = 2.0f / (top - bottom);
+	matrix.m [2][2] = -2.0f / (f - n);
+	matrix.m [3][3] = 1.0f;
+	
+	matrix.m [0][3] = -1.0f * ( (right + left) / (right - left) );
+	matrix.m [1][3] = -1.0f * ( (top + bottom) / (top - bottom) );
+	matrix.m [2][3] = -1.0f * ( (f + n) / (f - n) );
+	
+}
+```
+
+* A `left` paraméterrel kontrolláljuk, hogy a "képernyő bal széle melyik X koordinátának felel meg"
+* A `right` paraméterrel kontrolláljuk, hogy a "képernyő jobb széle melyik X koordinátának felel meg"
+* A `top` paraméterrel kontrolláljuk, hogy a "képernyő teteje melyik Y koordinátának felel meg"
+* A `bottom` paraméterrel kontrolláljuk, hogy a "képernyő alja melyik Y koordinátának felel meg"
+* A `near`-nél közelebb lévő dolgok, vagy a `far`-nal messzebb lévő dolgok pedig kívül esnek a frustumon, ezeket nem fogjuk kirajzolni
+
+Kvázi a 6 paraméterrel a frustum téglatest 3 oldalát adjuk meg.
+
