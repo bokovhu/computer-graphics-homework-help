@@ -222,3 +222,37 @@ vec2 splineTangent (vec2 p0, vec2 p1, vec2 p2, vec2 p3, float tension, float con
 }
 
 ```
+
+A spline konkrét kiszámolása pedig így néz ki pszeudókódban:
+
+```
+
+void calculateSpline () {
+
+	// Itt feltétel, hogy balról-jobbra X szerint sort-olva legyenek a control pointok
+	vec2 start = controlPoints [0];
+	vec2 end = controlPoints [controlPoints.size () - 1];
+
+	// Tesszellációs felbontás, lehet bármekkora
+	// Igazából most itt az az elképzelés, hogy 1 virtuális egység az 1 pixel,
+	// ehhez az ortogonális vetítést kell megfelelően paraméterezni
+	float step = 1.0f;
+
+	list <vec2> vertices;
+
+	float x = start.x;
+	while (x < end.x) {
+
+		// A spline függvény itt egy explicit spline-t ír le, azaz egy X értékhez
+		// kapunk egy Y értéket, mintha valami f(x) = y függvény lenne
+		vertices.push_back (vec2 (x, spline (x)));
+		x += step;
+
+	}
+
+	// vertices-t most feltölthetjük a videókártyára, ha pl LINE_STRIP-pel kötjük össze a pontokat, 
+	// akkor már kapunk egy vonalábrát a spline-ról
+
+}
+
+```
