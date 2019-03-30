@@ -132,3 +132,93 @@ inline void OrthographicProjection (
 
 Kvázi a 6 paraméterrel a frustum téglatest 3 oldalát adjuk meg.
 
+## Kochanek-Bartels spline
+
+A spline-ok görbék. A görbéket control point-ok megadásával tudjuk szabályozni, illetve attól függően,
+hogy milyen spline-ról beszéljünk más paramétereket is megadhatunk. 
+
+A Kochanek-Bartels spline egy cubic hermite spline, aminek van 3 extra tulajdonsága: _tension_, 
+_bias_ és _continuity_. Mindjárt rátérek, hogy ezek micsodák.
+
+A spline-ok kirajzolása úgy történik, hogy a control point-ok között nézünk valami diszkrét beosztást
+(tesszelláció), kapunk belőle pontokat, amelyeket szakaszokkal összekötünk. Megfelelő tesszellációs
+felbontás esetén egy nagyon sima görbét kapunk, kisebb felbontás esetén láthatóak a szakaszaink.
+
+A cubic hermite spline-ok úgy működnek, hogy minden egyes ponton meg kell határoznunk, hogy mely
+két control pont között vagyunk, és ezek után a következő formulával kapjuk meg a spline-on lévő
+pontunkat:
+
+```
+p(t) = (2 * t^3 - 3 * t^2 + 1) * p0
+	+ (t^3 - 2 * t^2 + t) * m0
+	+ (-2 * t^3 + 3 * t^2) * p1
+	+ (t^3 - t^2) * m1
+```
+
+A szimbólumok a képletben a következőek:
+	
+* `t`: Ez az interpolációs változónk. Két kontrol pont között ez a változó egy `(0, 1)` intervallumba eső értéket
+fog felvenni, mindjárt megmutatom, hogyan
+* `p0`: Ez a jelenleg vizsgált X koordinátától rögtön balra eső legközelebbi kontrol pont
+* `p1`: Ez a jelenleg vizsgált Y koordinátától rögtön jobbra eső legközelebbi kontrol pont
+* `m0`: Ez a `p0` pontban a spline deriváltja (meredeksége, irányvektora)
+* `m1`: Ez a `p1` pontban a spline deriváltja
+
+Tehát általánosan a következő pszeudókóddal számolhatjuk (közelíthetjük) egy spline pontjait:
+
+```
+
+struct KochanekBartelsResult {
+	vec2 d0;
+	vec2 d1;
+};
+
+vec2 spline (vec2 pos) {
+
+	vec2 p0 = closestLeft (pos);
+	vec2 p1 = closestRight (pos);
+
+	KochanekBartelsResult tangentResult = splineTangent ( ... );
+
+	vec2 m0 = tangentResult.d0;
+	vec2 m1 = tangentResult.d1;
+
+	float t = (pos.x - p0.x) / (p1.x - p0.x);
+
+	return ( 2.0 * t * t * t - 3.0 * t * t + 1.0 ) * p0
+		+ ( t * t * t - 2.0 * t * t + t ) * m0
+		+ ( -2.0 * t * t * t + 3.0 * t * t ) * p1
+		+ ( t * t * t - t * t ) * m1;
+
+}
+
+```
+
+Ami a spline típusától függ, az a `splineTangent` függvény a fönt olvasható pszeudókódban. Ez a Kochanek-Bartels
+spline esetén a következőképp néz ki:
+
+```
+
+struct KochanekBartelsResult {
+	vec2 d0;
+	vec2 d1;
+};
+
+// A p0 az a p(i-1) -- kettővel balra eső control point
+// A p1 az a p(i) -- rögtön balra eső control point
+// A p2 az a p(i + 1) -- rögtön jobbra eső control point
+// A p3 az a p(i + 2) -- kettővel jobbra eső control point
+vec2 splineTangent (vec2 p0, vec2 p1, vec2 p2, vec2 p3, float tension, float continuity, float bias) {
+
+	KochanekBartelsResult result;
+
+	result.d0 = ( ( 1.0 - tension ) * ( 1.0 + bias ) * ( 1.0 + continuity ) ) / 2.0 * (p1 - p0)
+		+ ( ( 1.0 - tension ) * ( 1.0 - bias ) * ( 1.0 - continuity ) ) / 2.0 * ( p2 - p1 );
+	result.d1 = ( ( 1.0 - tension ) * ( 1.0 + bias ) * ( 1.0 - continuity ) ) / 2.0 * (p2 - p1)
+		+ ( ( 1.0 - tension ) * ( 1.0 - bias ) * ( 1.0 + continuity ) ) / 2.0 * ( p3 - p2 );
+
+	return result;
+
+}
+
+```
