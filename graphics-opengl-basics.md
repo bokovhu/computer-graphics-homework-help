@@ -22,7 +22,7 @@ pont esetén. Ebben az esetben minden pontról pontosan kettő attribútumot tá
 
 Így már definiálható a _vertex_ fogalom: Egy darab vertex a egy adott pontról tárolt
 összes attribútum. Így a vertex-ünk **ebben az esetben** nem csak a pozícióból, hanem
-a pozícióból **és** a színvől áll össze. C++-ban ezt így tudnánk definiálni:
+a pozícióból **és** a színből áll össze. C++-ban ezt így tudnánk definiálni:
 
 ```cpp
 struct Vertex {

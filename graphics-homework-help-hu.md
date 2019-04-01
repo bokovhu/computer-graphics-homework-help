@@ -15,8 +15,8 @@ az a szerepe, hogy egy "ablakot" adjon a virtuális világra. Két fontos mátri
 kell egy kamerában nyilvántartani:
 
 * Projekciós mátrix: Ez definiálja, hogy "mik történnek az egyenesekkel"
-	* Ortogonális vetítés esetén a merőleges egyenesek merőlegesek maradnak
-	* Perspektív vetítés esetén a merőleges egyenesek nem maradnak merőlegesek
+	* Ortogonális vetítés esetén a párhuzamos egyenesek párhuzamosak maradnak
+	* Perspektív vetítés esetén a párhuzamos egyenesek egy pontba tartanak
 * View mátrix: Ez határozza meg a kamera transzformációját
 	* Hol van
 	* Merre néz
