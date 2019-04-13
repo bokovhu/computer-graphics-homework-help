@@ -2156,4 +2156,4 @@ void main() {
 }
 ```
 
-![Így kéne elvileg kinéznie](caleidoscope.png)
+![Így kéne elvileg kinéznie](caleidoscope.PNG)
