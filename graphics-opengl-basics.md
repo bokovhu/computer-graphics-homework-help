@@ -251,15 +251,8 @@ void main () {
 
 Most, hogy tudod mi az a vertex és fragment shader, visszatérek a `VAO`-ra. Azért volt szükség a shader bemutatására,
 mert a VAO-ban a szemantikát úgy rendeljük a VBO-ban tárolt adathoz, hogy meghatározzuk a vertex attribútumokat, és
-azt, hogy a VBO-ban az egyes attribútumok hogyan érhetőek el. A dokumentumban használt struktúrát magyarul így mondhatnánk
-meg az OpenGL-nek, aztán leírom, hogy ez OpenGL-ül hogyan néz ki:
-
-* Lesz egy `0`-ás indexű attribútum, ami egy kételemű `float` vektor. Mindig amikor kiolvasol egy ilyen vektort, akkor
-6 elemet kell ugranod a következő ugyanilyen vektorhoz. Rögtön az első kiolvasott adat már az első ilyen vektor
-* Lesz egy `1`-es indexű attribútum, ami szintén egy kételemű `float` vektor. Amikor kiolvasol egy ilyet, a következőt
-ismét 6 elem múlva találod. Most azonban az első két elemet ugord át, mert azok az előző attribútumhoz tartoznak
-* Végül, lesz egy `2`-es indexű attribútum, ami egy négyelemű `float` vektor. 4 elemet kell most ugranod a következő
-ilyen vektorig, és az első négy elemet ki kell hagynod ahhoz, hogy az első ilyen vektort beolvashasd
+azt, hogy a VBO-ban az egyes attribútumok hogyan érhetőek el. Az `i`-edik attribútum helyének meghatározásához az 
+OpenGL a következő képletet használja: `offset + i * stride`. Fontos, hogy itt byte-okról beszélünk, nem elemszámról!
 
 Az attribútum indexek pedig megegyeznek a vertex shader-ben látott `layout(location = <INDEX>)` által leírtakkal. A
 fentebb olvasható, magyar szöveget OpenGL-ben a következőképpen írhatjuk le C++-ban:
@@ -288,7 +281,7 @@ glVertexAttribPointer (
 	2, // Vektor elemszáma
 	GL_FLOAT, // Vektor adattípusa
 	GL_FALSE, // GL_TRUE esetén a bemeneti vektorok normalizáltak, nekünk ez nagyon nem kell!
-	6 * sizeof (float), // Mennyit kell ugrani a következő ehhez az attrib.-hoz tartozó vektorig, !!BYTE-OKBAN!!
+	8 * sizeof (float), // Vertex mérete !!BYTE-OKBAN!!
 	0 // Mennyit kell ugrani az első, az attrib.-hoz tartozó vektorig, !!BYTE-OKBAN!!
 );
 
@@ -299,7 +292,7 @@ glVertexAttribPointer (
 	2, // Vektor elemszáma
 	GL_FLOAT, // Vektor adattípusa
 	GL_FALSE, // GL_TRUE esetén a bemeneti vektorok normalizáltak, nekünk ez nagyon nem kell!
-	6 * sizeof (float), // Mennyit kell ugrani a következő ehhez az attrib.-hoz tartozó vektorig, !!BYTE-OKBAN!!
+	8 * sizeof (float), // Vertex mérete !!BYTE-OKBAN!!
 	2 * sizeof (float) // Mennyit kell ugrani az első, az attrib.-hoz tartozó vektorig, !!BYTE-OKBAN!!
 );
 
@@ -310,7 +303,7 @@ glVertexAttribPointer (
 	4, // Vektor elemszáma
 	GL_FLOAT, // Vektor adattípusa
 	GL_FALSE, // GL_TRUE esetén a bemeneti vektorok normalizáltak, nekünk ez nagyon nem kell!
-	4 * sizeof (float), // Mennyit kell ugrani a következő ehhez az attrib.-hoz tartozó vektorig, !!BYTE-OKBAN!!
+	8 * sizeof (float), // Vertex mérete !!BYTE-OKBAN!!
 	4 * sizeof (float) // Mennyit kell ugrani az első, az attrib.-hoz tartozó vektorig, !!BYTE-OKBAN!!
 );
 
@@ -341,14 +334,14 @@ Ha a CPU oldalon létező `vboData` tömböt megint előveszem, akkor mégtiszt�
 float vboData [] = {
 
 	// First vertex
-	v1.position.x, v1.position.y, // Attrib 0, 2 float
-	v1.texCoord.x, v1.texCoord.y, // Attrib 1, 2 float
-	v1.color.x, v1.color.y, v1.color.z, v1.color.w, // Attrib 2, 4 float
+	v1.position.x, v1.position.y,
+	v1.texCoord.x, v1.texCoord.y,
+	v1.color.x, v1.color.y, v1.color.z, v1.color.w,
 
 	// Second vertex
-	v2.position.x, v2.position.y, // Attrib 0, 6 elemet ugrottunk idáig
-	v2.texCoord.x, v2.texCoord.y,  // Attrib 1, 6 elemet ugrottunk idáig
-	v2.color.x, v2.color.y, v2.color.z, v2.color.w, // Attrib 2, 4 elemet ugrottunk idáig
+	v2.position.x, v2.position.y,
+	v2.texCoord.x, v2.texCoord.y,
+	v2.color.x, v2.color.y, v2.color.z, v2.color.w,
 
 	// Third vertex
 	v3.position.x, v3.position.y, 
