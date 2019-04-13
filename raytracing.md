@@ -30,6 +30,7 @@ megadunk sugár egyenesére illeszkedő egy darab pontot, és a sugár irányvek
 Ebből a sugár egyenlete a következőképp elő is áll:
 
 `p` pont: A sugár egy pontja
+
 `v` vektor: A sugár irányvektora
 
 A sugár egyenesén minden pont leírható úgy, hogy `p + t * v`, ahol `t` egy 
@@ -81,8 +82,8 @@ olyan információnk, hogy az RGB spektrumon mintavételezve mekkora a törésmu
 találatok fogják meghatározni. Ahhoz, hogy megértsük, ez miért működik, képzeljük el
 azt, hogy a fényforrásunkból elindul egy foton. Ez a foton valahol metsz egy rücskös
 felületet, visszapattan, és a tükrünkre érkezik. A tükörről "tökéletesen" verődik vissza,
-esetleg a türök egy másik pontjára. Ezt addig csinálja, amíg egyszercsak elérkezik pontosan
-abban a pixelbe, amit éppen nézünk. A tükrökről való pattogást nagyon egyszerű lin
+esetleg a tükör egy másik pontjára. Ezt addig csinálja, amíg egyszercsak elérkezik pontosan
+abba a pixelbe, amit éppen nézünk. A tükrökről való pattogást nagyon egyszerű lin
 algebra segítségével le tudjuk szimulálni, és kvázi ugyanazt csináltuk, mint a fény, csak
 **visszafelé**. Amint elérjük a rücskös felületet, tudunk színt számolni, amit a pattogás
 útvonalon visszafele viszünk, a `Fresnel-egyenlet` segítségével azt is meg tudjuk határozni,
