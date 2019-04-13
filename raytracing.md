@@ -301,7 +301,7 @@ void intersectSphere (in Ray ray, in vec4 sphere, out Hit hit) {
 	// megoldjuk, és olyan t értéket kapunk, amely a sugár irányában
 	// pozitív, és amúgy a másodfokú egyenletben a diszkrimináns >0 volt
 
-	hit.rayOrigin = ray.origin;
+    hit.rayOrigin = ray.origin;
     hit.rayDirection = ray.direction;
     
     vec3 dist = ray.origin - sphere.xyz;
@@ -389,12 +389,16 @@ Ha ezt bemásolod az editorban, akkor a képernyő közepétől kicsit jobbra-fe
 meg kellett, hogy jelenlen egy piros gömb. Gratulálok! Kész az első ray tracer-ed!
 Most jön az igazi **MÓKA**, amikor is ebből rendes ray tracer-t csinálunk.
 
+![Az első raytracered](raytrace-1.PNG)
+
 Most egy kicsit érdekesebb képet fogunk generálni, ugyanis érdemes leellenőrizni, 
 hogy a ray tracerünk valóban jól működik, ehhez meg fogjuk nézni, hogy a normálvektorokat
 is jól adja-e vissza. Így tehát a `return vec4 (1.0, 0.0, 0.0, 1.0);` sort cseréljük
 le erre: `return vec4 (hit.hitNormal * 0.5 + 0.5, 1.0);`. Ha jól csináltál mindent,
 akkor a gömb már sokkal színesebb, bal alsó tájékán kékes, jobb felső tájékán sárga
 színű.
+
+![Így kéne most kinéznie](raytrace-2.PNG)
 
 ## Első lépés: Rücskös anyagok, és világítás
 
@@ -652,6 +656,8 @@ void main() {
 }
 ```
 
+![Most így kéne, hogy kinézzen](raytrace-3.PNG)
+
 Ezzel készen is van az egyetlen gömbünk diffúz megvilágítása! Most adjuk
 hozzá a `Blinn-Phong` technika által leírt spekuláris komponenst. Ehhez
 az `if (cosTheta > 0.0)` ágat egészítjük egy kicsit ki:
@@ -675,6 +681,8 @@ if (cosTheta > 0.0) {
 
 }
 ```
+
+![Blinn-Phong után](raytrace-4.PNG)
 
 Amint láthatjuk, megjelent egy kis fehér valami a gömbünkön, ha így történt,
 akkor nagyon jól állunk, már csak kicsit alakítgatunk a struktúrákon, hogy
@@ -1206,6 +1214,8 @@ void main() {
 
 ```
 
+![Árnyékokkal](raytrace-5.PNG)
+
 Láthatjuk, hogy így már két gömbünk van, és az egyikre árnyékot vet a másik.
 Most csináljunk tükrös anyagokat! Ehhez szükségünk lesz egy pár dologra:
 
@@ -1613,6 +1623,8 @@ void main() {
 
 }
 ```
+
+![Fresnel-egyenlet, tükröződés](raytrace-6.PNG)
 
 Ebből már ki lehet indulni a házifeladat megoldásához.
 
